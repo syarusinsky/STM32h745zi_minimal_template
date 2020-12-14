@@ -10,14 +10,14 @@ LLPD_INCLUDE_DIR = $(LLPD_FILES_DIR)/include
 LLPD_SRC_DIR = $(LLPD_FILES_DIR)/src
 
 # devlib files directory
-# DEVLIB_FILES_DIR = ../lib/DevLib
-# DEVLIB_INCLUDE_DIR = $(DEVLIB_FILES_DIR)/include
-# DEVLIB_SRC_DIR = $(DEVLIB_FILES_DIR)/src
+DEVLIB_FILES_DIR = ../../lib/DevLib
+DEVLIB_INCLUDE_DIR = $(DEVLIB_FILES_DIR)/include
+DEVLIB_SRC_DIR = $(DEVLIB_FILES_DIR)/src
 
 # include directories
 INCLUDE =  -I$(STM32_CUBE_INCLUDE_DIR)
 INCLUDE += -I$(LLPD_INCLUDE_DIR)
-# INCLUDE += -I$(DEVLIB_INCLUDE_DIR)
+INCLUDE += -I$(DEVLIB_INCLUDE_DIR)
 
 # linker scripts
 LD_SCRIPT = $(STM32_CUBE_FILES_DIR)/ld/CM7/STM32H745ZITX_FLASH.ld
@@ -62,6 +62,7 @@ CFLAGS += -fsingle-precision-constant
 CFLAGS += -fmessage-length=0
 # (set system to ignore semihosted junk)
 CFLAGS += -specs=nano.specs
+CFLAGS += -specs=nosys.specs
 CFLAGS += -fno-exceptions
 CFLAGS += -fno-rtti
 CFLAGS += -ffunction-sections
@@ -85,7 +86,7 @@ C_SRC =  $(STM32_CUBE_FILES_DIR)/system_stm32h7xx_dualcore_boot_cm4_cm7.c
 # c++ files to compile
 CPP_SRC = ./main.cpp
 CPP_SRC += ./$(LLPD_SRC_DIR)/LLPD.cpp
-# CPP_SRC += $(wildcard $(DEVLIB_SRC_DIR)/*.cpp)
+CPP_SRC += $(wildcard $(DEVLIB_SRC_DIR)/*.cpp)
 
 RELEASE_OBJS =  $(AS_SRC:.s=_release.o)
 RELEASE_OBJS += $(C_SRC:.c=_release.o)
