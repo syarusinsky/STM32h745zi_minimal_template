@@ -2,6 +2,8 @@
 
 int main(void)
 {
+	LLPD::rcc_clock_start_max_cpu2();
+
 	unsigned int someVar = 7;
 	while ( true )
 	{
