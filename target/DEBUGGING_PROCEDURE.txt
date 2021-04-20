@@ -1,5 +1,3 @@
-Debugging is very finicky, but for now here are the steps
-
 FLASHING BOTH CORES:
 	1. in CM4 directory, openocd -f STM32h745zi_CM4.cfg
 	2. in CM7 directory, arm-none-eabi-gdb main_debug.elf
@@ -26,4 +24,4 @@ CORE_M4:
 	4. debug as normal
 
 NOTES:
-	- Currently when using this HAL, the debug stops at PWR_D3CR_VOSRDY, yet this doesn't happen with ST's code??? Fix that
+	- Using openocd 1.11
