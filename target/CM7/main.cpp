@@ -24,9 +24,15 @@ int main(void)
 	LLPD::gpio_enable_clock( GPIO_PORT::G );
 	LLPD::gpio_enable_clock( GPIO_PORT::H );
 
+	// USART setup
+	LLPD::usart_init( USART_NUM::USART_1, USART_WORD_LENGTH::BITS_8, USART_PARITY::NONE, USART_CONF::TX_AND_RX,
+				USART_STOP_BITS::BITS_1, 120000000, 9600 );
+	LLPD::usart_log( USART_NUM::USART_1, "Gen_MAX_FX_SYN starting up ----------------------------" );
+
 	// audio timer setup (for 40 kHz sampling rate at 480 MHz timer clock)
 	LLPD::tim6_counter_setup( 0, 12000, 40000 );
 	LLPD::tim6_counter_enable_interrupts();
+	LLPD::usart_log( USART_NUM::USART_1, "tim6 initialized..." );
 
 	// test led setup
 	LLPD::gpio_output_setup( GPIO_PORT::A, GPIO_PIN::PIN_0, GPIO_PUPD::NONE, GPIO_OUTPUT_TYPE::PUSH_PULL, GPIO_OUTPUT_SPEED::LOW );
@@ -40,6 +46,7 @@ int main(void)
 
 	// audio timer start
 	LLPD::tim6_counter_start();
+	LLPD::usart_log( USART_NUM::USART_1, "tim6 started..." );
 
 	// SRAM setup and test
 	/*
@@ -89,4 +96,11 @@ extern "C" void TIM6_DAC_IRQHandler (void)
 	}
 
 	LLPD::tim6_counter_clear_interrupt_flag();
+}
+
+extern "C" void USART1_IRQHandler (void)
+{
+	// loopback test code for usart recieve
+	uint16_t data = LLPD::usart_receive( USART_NUM::USART_1 );
+	LLPD::usart_transmit( USART_NUM::USART_1, data );
 }
