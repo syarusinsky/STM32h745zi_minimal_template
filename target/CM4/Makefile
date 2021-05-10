@@ -78,7 +78,7 @@ LFLAGS += -Wl,--gc-sections
 LFLAGS += -T$(LSCRIPT)
 
 # assembly files to compile
-AS_SRC = $(STM32_CUBE_FILES_DIR)/startup_stm32h745xx_CM4.s
+AS_SRC = $(STM32_CUBE_FILES_DIR)/startup_stm32h745zitx.s
 
 # c files to compile
 C_SRC =  $(STM32_CUBE_FILES_DIR)/system_stm32h7xx_dualcore_boot_cm4_cm7.c

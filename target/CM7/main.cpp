@@ -65,7 +65,6 @@ int main(void)
 		LLPD::usart_log_int( USART_NUM::USART_3, "SRAM failed! value 2: ", retVals[2] );
 	}
 
-
 	// audio timer start
 	LLPD::tim6_counter_start();
 	LLPD::usart_log( USART_NUM::USART_1, "tim6 started..." );
