@@ -56,6 +56,14 @@ int main(void)
 	LLPD::tim6_counter_start();
 	LLPD::usart_log( USART_NUM::USART_1, "tim6 started..." );
 
+	// adc setup (note this must be done after the tim6_counter_start() call since it uses the delay funtion)
+	LLPD::gpio_analog_setup( GPIO_PORT::A, GPIO_PIN::PIN_2 ); // ADC12 channel 14
+	LLPD::gpio_analog_setup( GPIO_PORT::F, GPIO_PIN::PIN_6 ); // ADC3 channel 8
+	LLPD::adc_init( ADC_NUM::ADC_1_2, ADC_CYCLES_PER_SAMPLE::CPS_810p5 );
+	LLPD::adc_init( ADC_NUM::ADC_3, ADC_CYCLES_PER_SAMPLE::CPS_810p5 );
+	LLPD::adc_set_channel_order( ADC_NUM::ADC_1_2, 1, ADC_CHANNEL::CHAN_14 );
+	LLPD::adc_set_channel_order( ADC_NUM::ADC_3, 1, ADC_CHANNEL::CHAN_8 );
+
 	// quick spi test
 	LLPD::tim6_delay( 10000 ); // TODO arbitrary delay since if we immediately use the sram it can be wrong
 	LLPD::gpio_output_set( GPIO_PORT::B, GPIO_PIN::PIN_12, false );
@@ -97,6 +105,12 @@ int main(void)
 
 	while ( true )
 	{
+		LLPD::adc_perform_conversion_sequence( ADC_NUM::ADC_1_2 );
+		LLPD::adc_perform_conversion_sequence( ADC_NUM::ADC_3 );
+		uint16_t adc12Val = LLPD::adc_get_channel_value( ADC_NUM::ADC_1_2, ADC_CHANNEL::CHAN_14 );
+		uint16_t adc3Val = LLPD::adc_get_channel_value( ADC_NUM::ADC_3, ADC_CHANNEL::CHAN_8 );
+		LLPD::usart_log_int( USART_NUM::USART_1, "adc12 channel 14 value: ", adc12Val );
+		LLPD::usart_log_int( USART_NUM::USART_1, "adc3 channel 8 value: ", adc3Val );
 	}
 }
 
