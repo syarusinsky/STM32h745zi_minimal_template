@@ -25,14 +25,25 @@ int main(void)
 	LLPD::gpio_enable_clock( GPIO_PORT::H );
 
 	// USART setup
-	LLPD::usart_init( USART_NUM::USART_1, USART_WORD_LENGTH::BITS_8, USART_PARITY::NONE, USART_CONF::TX_AND_RX,
+	LLPD::usart_init( USART_NUM::USART_6, USART_WORD_LENGTH::BITS_8, USART_PARITY::NONE, USART_CONF::TX_AND_RX,
 				USART_STOP_BITS::BITS_1, 120000000, 9600 );
-	LLPD::usart_log( USART_NUM::USART_1, "Gen_MAX_FX_SYN starting up ----------------------------" );
+	LLPD::usart_log( USART_NUM::USART_6, "Gen_MAX_FX_SYN starting up ----------------------------" );
 
 	// audio timer setup (for 40 kHz sampling rate at 480 MHz timer clock)
 	LLPD::tim6_counter_setup( 0, 6000, 40000 );
 	LLPD::tim6_counter_enable_interrupts();
-	LLPD::usart_log( USART_NUM::USART_1, "tim6 initialized..." );
+	LLPD::usart_log( USART_NUM::USART_6, "tim6 initialized..." );
+
+	// Op Amp setup
+	LLPD::gpio_analog_setup( GPIO_PORT::B, GPIO_PIN::PIN_0 );
+	LLPD::gpio_analog_setup( GPIO_PORT::C, GPIO_PIN::PIN_5 );
+	LLPD::gpio_analog_setup( GPIO_PORT::C, GPIO_PIN::PIN_4 );
+	LLPD::opamp_init( OPAMP_NUM::OPAMP_1 );
+	LLPD::gpio_analog_setup( GPIO_PORT::E, GPIO_PIN::PIN_9 );
+	LLPD::gpio_analog_setup( GPIO_PORT::E, GPIO_PIN::PIN_8 );
+	LLPD::gpio_analog_setup( GPIO_PORT::E, GPIO_PIN::PIN_7 );
+	LLPD::opamp_init( OPAMP_NUM::OPAMP_2 );
+	LLPD::usart_log( USART_NUM::USART_6, "op amp initialized..." );
 
 	// test led setup
 	LLPD::gpio_output_setup( GPIO_PORT::A, GPIO_PIN::PIN_1, GPIO_PUPD::NONE, GPIO_OUTPUT_TYPE::PUSH_PULL, GPIO_OUTPUT_SPEED::LOW );
@@ -41,11 +52,11 @@ int main(void)
 	// spi initialization
 	LLPD::spi_master_init( SPI_NUM::SPI_2, SPI_BAUD_RATE::SYSCLK_DIV_BY_256, SPI_CLK_POL::LOW_IDLE, SPI_CLK_PHASE::FIRST,
 				SPI_DUPLEX::FULL, SPI_FRAME_FORMAT::MSB_FIRST, SPI_DATA_SIZE::BITS_8 );
-	LLPD::usart_log( USART_NUM::USART_3, "sram initialized..." );
+	LLPD::usart_log( USART_NUM::USART_6, "sram initialized..." );
 
 	// i2c initialization
 	LLPD::i2c_master_setup( I2C_NUM::I2C_1, 0x308075AE );
-	LLPD::usart_log( USART_NUM::USART_3, "i2c initialized..." );
+	LLPD::usart_log( USART_NUM::USART_6, "i2c initialized..." );
 
 	// sram cs setup
 	LLPD::gpio_output_setup( GPIO_PORT::B, GPIO_PIN::PIN_12, GPIO_PUPD::PULL_UP, GPIO_OUTPUT_TYPE::PUSH_PULL,
@@ -54,7 +65,7 @@ int main(void)
 
 	// audio timer start
 	LLPD::tim6_counter_start();
-	LLPD::usart_log( USART_NUM::USART_1, "tim6 started..." );
+	LLPD::usart_log( USART_NUM::USART_6, "tim6 started..." );
 
 	// adc setup (note this must be done after the tim6_counter_start() call since it uses the delay funtion)
 	LLPD::gpio_analog_setup( GPIO_PORT::A, GPIO_PIN::PIN_2 ); // ADC12 channel 14
@@ -81,11 +92,11 @@ int main(void)
 	LLPD::gpio_output_set( GPIO_PORT::B, GPIO_PIN::PIN_12, true );
 	if ( spiRetVal == 45 )
 	{
-		LLPD::usart_log( USART_NUM::USART_1, "sram verified..." );
+		LLPD::usart_log( USART_NUM::USART_6, "sram verified..." );
 	}
 	else
 	{
-		LLPD::usart_log( USART_NUM::USART_1, "unable to verify sram..." );
+		LLPD::usart_log( USART_NUM::USART_6, "unable to verify sram..." );
 	}
 
 	// quick i2c test
@@ -96,11 +107,11 @@ int main(void)
 	LLPD::i2c_master_read( I2C_NUM::I2C_1, true, 1, &i2cRetVal );
 	if ( i2cRetVal == 24 )
 	{
-		LLPD::usart_log( USART_NUM::USART_1, "eeprom verified..." );
+		LLPD::usart_log( USART_NUM::USART_6, "eeprom verified..." );
 	}
 	else
 	{
-		LLPD::usart_log( USART_NUM::USART_1, "unable to verify eeprom..." );
+		LLPD::usart_log( USART_NUM::USART_6, "unable to verify eeprom..." );
 	}
 
 	while ( true )
@@ -109,8 +120,8 @@ int main(void)
 		LLPD::adc_perform_conversion_sequence( ADC_NUM::ADC_3 );
 		uint16_t adc12Val = LLPD::adc_get_channel_value( ADC_NUM::ADC_1_2, ADC_CHANNEL::CHAN_14 );
 		uint16_t adc3Val = LLPD::adc_get_channel_value( ADC_NUM::ADC_3, ADC_CHANNEL::CHAN_8 );
-		LLPD::usart_log_int( USART_NUM::USART_1, "adc12 channel 14 value: ", adc12Val );
-		LLPD::usart_log_int( USART_NUM::USART_1, "adc3 channel 8 value: ", adc3Val );
+		LLPD::usart_log_int( USART_NUM::USART_6, "adc12 channel 14 value: ", adc12Val );
+		LLPD::usart_log_int( USART_NUM::USART_6, "adc3 channel 8 value: ", adc3Val );
 	}
 }
 
@@ -140,6 +151,6 @@ extern "C" void TIM6_DAC_IRQHandler (void)
 extern "C" void USART1_IRQHandler (void)
 {
 	// loopback test code for usart recieve
-	uint16_t data = LLPD::usart_receive( USART_NUM::USART_1 );
-	LLPD::usart_transmit( USART_NUM::USART_1, data );
+	uint16_t data = LLPD::usart_receive( USART_NUM::USART_6 );
+	LLPD::usart_transmit( USART_NUM::USART_6, data );
 }
