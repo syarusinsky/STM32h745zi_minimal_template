@@ -34,6 +34,10 @@ int main(void)
 	LLPD::tim6_counter_enable_interrupts();
 	LLPD::usart_log( USART_NUM::USART_6, "tim6 initialized..." );
 
+	// DAC setup
+	LLPD::dac_init( true );
+	LLPD::usart_log( USART_NUM::USART_6, "dac initialized..." );
+
 	// Op Amp setup
 	LLPD::gpio_analog_setup( GPIO_PORT::B, GPIO_PIN::PIN_0 );
 	LLPD::gpio_analog_setup( GPIO_PORT::C, GPIO_PIN::PIN_5 );
@@ -122,6 +126,7 @@ int main(void)
 		uint16_t adc3Val = LLPD::adc_get_channel_value( ADC_NUM::ADC_3, ADC_CHANNEL::CHAN_8 );
 		LLPD::usart_log_int( USART_NUM::USART_6, "adc12 channel 14 value: ", adc12Val );
 		LLPD::usart_log_int( USART_NUM::USART_6, "adc3 channel 8 value: ", adc3Val );
+		LLPD::dac_send( adc12Val, adc3Val );
 	}
 }
 
